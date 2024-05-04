@@ -47,26 +47,6 @@ ALLOWED_EXTENSIONS = {'pth', 'npy', 'pt', 'h5'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# @app.route('/upload', methods=['POST'])
-# def upload_file():
-#     if 'file' not in request.files:
-#         return jsonify({"status": "error", "message": "No file part in the request"}), 400
-#     file = request.files['file']
-#     if file.filename == '':
-#         return jsonify({"status": "error", "message": "No file selected for uploading"}), 400
-#     if file and allowed_file(file.filename):
-#         filename = secure_filename(file.filename)
-#         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-#         try:
-#             file.save(file_path)
-#             # Optionally load and update the model here if needed
-#             return jsonify({"status": "success", "message": f"File {filename} uploaded successfully."}), 200
-#         except Exception as e:
-#             return jsonify({"status": "error", "message": f"Failed to save the file: {str(e)}"}), 500
-#     else:
-#         return jsonify({"status": "error", "message": "File type not allowed"}), 400
-
-
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
