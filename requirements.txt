@@ -1,3 +1,5 @@
 flask
+web3
+ipfshttpclient
 Werkzeug
-crypten
+python-dotenv

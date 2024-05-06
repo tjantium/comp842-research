@@ -14,6 +14,8 @@ Use smart contracts for automated tasks, like triggering model updates when cert
 
 ## some low-level frameworks to apply concepts
 
+- e.g. using PySyft for homomorphic encryption and secure multi-party computation. ( Scope down to the multipart using tss as a novel approach)
+
 ## How to Use TSS in Federated Learning
 
 - Distribute Model Weights Using TSS:
