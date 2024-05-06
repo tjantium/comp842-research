@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class IPFS:
-    def __init__(self):
-        self.client = ipfshttpclient.connect('/ip4/')
-        pass
+# class IPFS:
+#     def __init__(self):
+#         self.client = ipfshttpclient.connect('/ip4/')
+#         pass

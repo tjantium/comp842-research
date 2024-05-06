@@ -1,5 +1,5 @@
 flask
 web3
-ipfshttpclient
+ipfshttpclient==0.8.0a1
 Werkzeug
 python-dotenv

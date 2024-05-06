@@ -1,6 +1,7 @@
 import torch
 from torch import nn, optim
 import requests
+import json
 
 # Assuming the model and optimizer have been defined similarly to the server script
 model = nn.Linear(2, 1)
@@ -31,11 +32,39 @@ def save_model_locally(model, filepath):
 
 # Function to send model file to the server
 def upload_model_to_server(filepath):
-    with open(filepath, 'rb') as f:
-        files = {'file': (filepath, f)}
-        response = requests.post("http://localhost:5000/upload", files=files)
-        print(response.text)  # Print server response for debugging
-    return response.status_code
+    try:
+        with open(filepath, 'rb') as f:
+            files = {'file': f}
+            response = requests.post("http://localhost:5003/upload", files=files)
+            if response.status_code == 200:
+                print("Model file uploaded successfully.")
+            else:
+                print("Failed to upload model file. Server responded with status code:", response.status_code)
+            print("Server response:", response.text)  # Print server response for debugging
+            return response.status_code
+    except Exception as e:
+        print("An error occurred while uploading the model file:", str(e))
+        return None
+
+
+def retrieve_data_from_server():
+    try:
+        response = requests.get("http://localhost:5003/retrieve_data")
+        if response.status_code == 200:
+            data = response.json()
+            ipfs_hash = data.get("ipfs_hash")
+            if ipfs_hash:
+                return ipfs_hash
+            else:
+                print("No IPFS hash found in the response.")
+                return None
+        else:
+            print("Failed to retrieve data from server. Server responded with status code:", response.status_code)
+            return None
+    except Exception as e:
+        print("An error occurred while retrieving data from server:", str(e))
+        return None
+
 
 # Main execution function
 if __name__ == "__main__":
@@ -44,6 +73,6 @@ if __name__ == "__main__":
     save_model_locally(model, model_filepath)  # Save the model to a file
     status_code = upload_model_to_server(model_filepath)
     if status_code == 200:
-        print("Model file uploaded successfully.")
+        print("Model uploaded successfully.")
     else:
-        print("Failed to upload model file.")
+        print("Failed to upload the model file.")
