@@ -66,6 +66,24 @@ def retrieve_data_from_server():
         return None
 
 
+def get_transaction_history(url):
+    try:
+        # Sending a GET request to the Flask server's endpoint
+        response = requests.get(url)
+        
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Print or process the JSON data returned from the server
+            transaction_history = response.json()
+            print("Transaction History Retrieved Successfully:")
+            for entry in transaction_history:
+                print(entry)
+        else:
+            print("Failed to retrieve transaction history, Status Code:", response.status_code)
+    except Exception as e:
+        print("An error occurred while trying to fetch transaction history:", str(e))
+
+
 # Main execution function
 if __name__ == "__main__":
     model = train_local_model(X_train, y_train)

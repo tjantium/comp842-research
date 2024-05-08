@@ -28,7 +28,7 @@ web3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))  # Your Ganache URL
 web3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
 # Correctly using the checksum address for all operations
-contract_address = "0xd0221388a73232325ce0641a8beca58b326d80bf"
+contract_address = "0x7e1fcf190c223398b851047be094d8e4da564731"
 checksum_address = web3.to_checksum_address(contract_address)
 contract_abi_path = "block_chain/build/contracts/SimpleStorage.json"
 
@@ -38,7 +38,7 @@ with open(contract_abi_path, 'r') as f:
     contract_abi = contract_data['abi']
 
 # Initialize the account with the private key
-ganache_private_key = "0xee9715fe3184b227d8967622f196b0d15900c79d8873472aabba99b6bcd6362d"
+ganache_private_key = "0xab0f62f94a335b1bbee0e8ec3364f474fe2fb99d61b59b8748f873735b6328ae"
 account = Account.from_key(ganache_private_key)
 account_address = account.address
 # Access the contract using the checksummed address
@@ -224,6 +224,35 @@ def retrieve_data():
     except Exception as e:
         return jsonify({"status": "error", "message": f"An error occurred: {str(e)}"}), 500
 
+
+@app.route('/get_tx_history', methods=['GET'])
+def get_transaction_history():
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
+        
+        from_block = request.args.get('0x0', '0')
+        to_block = request.args.get('to', 'latest')
+
+        # filter = contract.events.IPFSHashStored.create_filter(fromBlock=from_block, toBlock=to_block)
+        # Correctly specify the block numbers in hexadecimal
+        block_number = 0
+        hex_block_number = hex(block_number)  # Converts 0 to '0x0'
+        nd_block = web3.eth.blockNumber
+
+        filter = contract.events.IPFSHashStored.create_filter(fromBlock='0x0', ttoBlock=hex(end_block))
+
+        events = filter.get_all_entries()
+
+        # Implementing pagination
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_events = events[start:end]
+
+        history = [{"blockNumber": event['blockNumber'], "sender": event['args']['sender'], "ipfsHash": event['args']['ipfsHash']} for event in paginated_events]
+        return jsonify(history), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 
