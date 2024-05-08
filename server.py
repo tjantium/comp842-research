@@ -11,9 +11,12 @@ import traceback
 from web3 import Web3, HTTPProvider
 from web3.middleware import geth_poa_middleware
 from eth_account import Account
-
+from flask_restx import Api, Resource
 
 app = Flask(__name__)
+
+api = Api(app, version='1.0', title='API Documentation', description='A simple API')
+ns = api.namespace('IPFS', description='IPFS operations')
 
 # Assuming the same model structure as the clients
 model = nn.Linear(2, 1)
@@ -257,7 +260,7 @@ def get_transaction_history():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5003)
+    app.run(host='0.0.0.0', port=5003, debug=True)
     # Example usage:
     # retrieve_data_from_logs()
 
