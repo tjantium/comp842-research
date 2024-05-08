@@ -5,9 +5,13 @@ import json
 from werkzeug.utils import secure_filename
 import os
 import ipfshttpclient
-from web3 import Web3
 import json
 import datetime
+import traceback
+from web3 import Web3, HTTPProvider
+from web3.middleware import geth_poa_middleware
+from eth_account import Account
+
 
 app = Flask(__name__)
 
@@ -19,16 +23,26 @@ model = nn.Linear(2, 1)
 aggregated_weights = {name: torch.zeros_like(param) for name, param in model.named_parameters()}
 client_count = 0
 
+# configurtion for web3
+web3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))  # Your Ganache URL
+web3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
-
-web3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))  # Replace with  Ganache URL
-contract_address = "0x65eF3bC9C30dAd7794a0eBc69f773D345E72eFDa"  # Replace with your deployed contract address
-contract_abi_path = "block_chain/build/contracts/SimpleStorage.json"  # Path to Truffle-generated contract artifacts
+# Correctly using the checksum address for all operations
+contract_address = "0xd0221388a73232325ce0641a8beca58b326d80bf"
+checksum_address = web3.to_checksum_address(contract_address)
+contract_abi_path = "block_chain/build/contracts/SimpleStorage.json"
 
 # Load contract ABI from Truffle-generated artifacts
-with open(contract_abi_path) as f:
+with open(contract_abi_path, 'r') as f:
     contract_data = json.load(f)
     contract_abi = contract_data['abi']
+
+# Initialize the account with the private key
+ganache_private_key = "0xee9715fe3184b227d8967622f196b0d15900c79d8873472aabba99b6bcd6362d"
+account = Account.from_key(ganache_private_key)
+account_address = account.address
+# Access the contract using the checksummed address
+contract = web3.eth.contract(address=checksum_address, abi=contract_abi)
 
 
 def deserialize_model(serialized_model):
@@ -85,7 +99,6 @@ def write_to_log(ipfs_hashes):
     try:
         # Create logs directory if it doesn't exist
         os.makedirs(LOG_DIR, exist_ok=True)
-
         # Generate log file name with timestamp
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         log_file = os.path.join(LOG_DIR, f"log_{timestamp}.txt")
@@ -100,23 +113,31 @@ def write_to_log(ipfs_hashes):
         print(f"Error writing to log file: {e}")
 
 
-# Instantiate contract
-contract = web3.eth.contract(address=contract_address, abi=contract_abi)
-
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 def log_to_contract(ipfs_hash, message, status):
     try:
-        # Send transaction to the contract's storeIPFSHash function
-        tx_hash = contract.functions.storeIPFSHash(ipfs_hash).transact({'from': from_address})
-        receipt = web3.eth.waitForTransactionReceipt(tx_hash)
-        print("Transaction receipt:", receipt)
-        return True
+        print(f"Logging to contract: {message}, Status: {status}")
+        nonce = web3.eth.get_transaction_count(account_address)
+        transaction = contract.functions.storeIPFSHash(ipfs_hash).build_transaction({
+            'chainId': 1337,  # Adjust chainId according to your network
+            'nonce': nonce,
+            'gas': 2000000,
+            'gasPrice': web3.to_wei('50', 'gwei'),
+            'from': account_address
+        })
+        # Sign and send the transaction using the same private key
+        signed_txn = web3.eth.account.sign_transaction(transaction, private_key=ganache_private_key)
+        tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+        receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+
+        if receipt.status == 0:
+            return False, tx_hash.hex(), "Transaction failed or reverted"
+        return True, tx_hash.hex(), "Transaction successful"
     except Exception as e:
-        print(f"Error logging to contract: {e}")
-        return False
+        return False, None, str(e)
 
 
 def upload_to_ipfs(file_path):
@@ -129,14 +150,13 @@ def upload_to_ipfs(file_path):
         print(f"Error uploading file to IPFS: {e}")
         return None
 
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     try:
-        # Ensure that the request is a POST request
         if request.method != 'POST':
             return jsonify({"status": "error", "message": "Method not allowed"}), 405
 
-        # Ensure that the request contains file data
         if 'file' not in request.files:
             return jsonify({"status": "error", "message": "No file part in the request"}), 400
 
@@ -152,14 +172,17 @@ def upload_file():
             # Upload to IPFS and log to contract
             ipfs_hash = upload_to_ipfs(file_path)
             if ipfs_hash:
-                log_to_contract(ipfs_hash, f"File {filename} uploaded successfully.", "success")
-                return jsonify({"status": "success", "message": f"File {filename} uploaded successfully.", "ipfs_hash": ipfs_hash}), 200
+                success, tx_hash, error_message = log_to_contract(ipfs_hash, f"File {filename} uploaded successfully.", "success")
+                if success:
+                    return jsonify({"status": "success", "message": "File uploaded and logged successfully.", "ipfs_hash": ipfs_hash, "tx_hash": tx_hash}), 200
+                else:
+                    return jsonify({"status": "error", "message": "Failed to log IPFS hash to the blockchain: " + error_message, "ipfs_hash": ipfs_hash}), 500
             else:
                 return jsonify({"status": "error", "message": "Failed to upload file to IPFS"}), 500
         else:
             return jsonify({"status": "error", "message": "File type not allowed"}), 400
     except Exception as e:
-        return jsonify({"status": "error", "message": f"An error occurred: {str(e)}"}), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route('/api/update_model', methods=['POST'])
