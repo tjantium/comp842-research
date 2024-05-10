@@ -1,3 +1,12 @@
+- Problem statment 
+    - True purpose of  a federated ML is to make sure that maintain privacy of the data, and making sure the model got integrity.  This is not exposed to attack vectors.
+    - The current federated ML systems are distributed and the overhead cost of implementation, maintaining those are expensive , consume tons  of infra , require specific skill sets to integrate with current technology in place. 
+    - Often hard to scale.
+    - Often doesn’t work as expected. 
+- Solution
+    - By trying to introduce the new layer of validation using blockchain and reduce the complexity around implementation and integration. Be able to extend that concept to wider compute resources and be able to fast track ML model training, and bridge the gap between current computer bottle necks, in a much secure way. 
+
+
 | Aspect                         | Challenge in Traditional Systems                                                                                                                                              | Blockchain Solution                                                                                                             |
 |--------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
 | **Decentralization of Trust**  | Reliance on a central server or entity that coordinates activities, posing a single point of failure and requiring trust in a single server or administrator.                     | Distributes trust among multiple nodes in the network, eliminating the need for a central authority by using consensus mechanisms. |
