@@ -1,0 +1,18 @@
+- Problem statment 
+    - True purpose of  a federated ML is to make sure that maintain privacy of the data, and making sure the model got integrity.  This is not exposed to attack vectors.
+    - The current federated ML systems are distributed and the overhead cost of implementation, maintaining those are expensive , consume tons  of infra , require specific skill sets to integrate with current technology in place. 
+    - Often hard to scale.
+    - Often doesn’t work as expected. 
+- Solution
+    - By trying to introduce the new layer of validation using blockchain and reduce the complexity around implementation and integration. Be able to extend that concept to wider compute resources and be able to fast track ML model training, and bridge the gap between current computer bottle necks, in a much secure way. 
+
+
+| Aspect                         | Challenge in Traditional Systems                                                                                                                                              | Blockchain Solution                                                                                                             |
+|--------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| **Decentralization of Trust**  | Reliance on a central server or entity that coordinates activities, posing a single point of failure and requiring trust in a single server or administrator.                     | Distributes trust among multiple nodes in the network, eliminating the need for a central authority by using consensus mechanisms. |
+| **Immutable Record of Activities** | Difficult to maintain a tamper-proof log of activities such as data contributions and model updates, typically requiring additional complex logging systems.                      | Every transaction is recorded in an immutable ledger, providing a permanent, unalterable record of all activities.                |
+| **Transparent and Verifiable Operations** | Ensuring operations like model training and data sharing are transparent and verifiable can require extensive audit trails and third-party verification.                            | All network participants can verify actions transparently; smart contracts automatically execute and verify rules of engagement.  |
+| **Enhanced Security and Data Integrity** | Securing data and ensuring integrity during transfer and processing in federated systems requires robust encryption and secure communication channels.                             | Provides inherent data integrity and security through cryptographic measures, ensuring data once written cannot be altered.       |
+| **Automated Compliance and Smart Contracting** | Managing compliance with data governance and usage policies can be complex and error-prone, often relying on manual checks or complex software tools.                               | Smart contracts automate compliance and enforcement of data usage policies, reducing complexity and potential for human error.    |
+| **Incentive Mechanisms**       | Incentivizing participants fairly and transparently in federated environments can be complex and requires secure and transparent mechanisms to distribute rewards.               | Facilitates transparent and fair distribution of incentives based on contributions, managed and automated via smart contracts.    |
+
