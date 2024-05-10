@@ -33,7 +33,7 @@ Use smart contracts for automated tasks, like triggering model updates when cert
 |   Client  +------>+  server.py  +------>+  Smart Contract   |
 |           |       |  (Flask API)|       |  (Ethereum Block- |
 +-----------+       +-------------+       |  chain)           |
-        |                                +-------------------+
+        |                                 +-------------------+
         |                                           ^
         |                                           |
         v                                           |

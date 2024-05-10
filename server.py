@@ -12,6 +12,7 @@ from web3 import Web3, HTTPProvider
 from web3.middleware import geth_poa_middleware
 from eth_account import Account
 from flask_restx import Api, Resource
+from fed.fed_tss import split_weights_into_shares
 
 app = Flask(__name__)
 
@@ -257,6 +258,16 @@ def get_transaction_history():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route('/distribute_shares', methods=['GET'])
+def distribute_shares():
+    # Assuming model is globally defined and already trained or initialized
+    shares = split_weights_into_shares(model, n=10, k=5)  # Example: 10 shares, threshold of 5
+    # Serialize shares for transmission
+    serialized_shares = [pickle.dumps(share).hex() for share in shares]
+    # Store shares securely and send one share per client
+    # In a real application, you would send each share to a different client securely
+    return jsonify({"shares": serialized_shares}), 200
 
 
 if __name__ == '__main__':

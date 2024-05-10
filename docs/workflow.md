@@ -25,8 +25,6 @@
 
 
 ```
-
-
 ## Detailed Flow Explanation
 
 ### Client

@@ -1,50 +1,27 @@
-import syft as sy
 import torch
-from torch import nn
+from Crypto.Protocol.SecretSharing import Shamir
+import pickle
 
-class FederatedTSS:
-    def __init__(self, model, num_clients=3, threshold=2):
-        self.model = model
-        self.num_clients = num_clients
-        self.threshold = threshold
-        self.shares = []
-        self.aggregated_shares = []
+def serialize_model_weights(model):
+    # Convert model weights to a byte array
+    model_weights = {k: v.cpu().numpy() for k, v in model.state_dict().items()}
+    return pickle.dumps(model_weights)
 
-    def split_weights(self):
-        """ Split model weights into shares using TSS. """
-        hook = sy.TorchHook(torch)
-        crypto_provider = sy.VirtualWorker(hook, id="crypto_provider")
-        workers = [sy.VirtualWorker(hook, id=f"worker{i+1}") for i in range(self.num_clients)]
+def deserialize_model_weights(weight_bytes):
+    # Convert byte array back to model weights
+    model_weights = pickle.loads(weight_bytes)
+    return {k: torch.tensor(v) for k, v in model_weights.items()}
 
-        # Create shares of the model weights
-        self.shares = [self.model.weight.data.fix_prec().share(*workers, crypto_provider=crypto_provider, requires_grad=True)
-                       for _ in range(self.num_clients)]
+def split_weights_into_shares(model, n, k):
+    # Serialize model weights to bytes
+    weight_bytes = serialize_model_weights(model)
+    # Split bytes into shares using Shamir's Secret Sharing
+    shares = Shamir.split(k, n, weight_bytes)
+    return shares
 
-    def distribute_shares(self):
-        """ Simulate distribution of shares to clients. """
-        # This function would handle sending each share to a different client
-        return self.shares
-
-    def receive_updated_shares(self, updated_shares):
-        """ Receive shares of updated weights from the clients. """
-        self.aggregated_shares.extend(updated_shares)
-        if len(self.aggregated_shares) >= self.threshold:
-            self.reconstruct_and_aggregate()
-
-    def reconstruct_and_aggregate(self):
-        """ Reconstruct the updated model weights from shares. """
-        # Assuming all shares are appropriately returned and can be aggregated
-        if len(self.aggregated_shares) < self.threshold:
-            raise ValueError("Not enough shares to reconstruct the weights.")
-        
-        # Securely aggregate the shares
-        new_weights = sum(self.aggregated_shares) / len(self.aggregated_shares)
-        self.model.weight.data.set_(new_weights.get().float_prec())
-
-# Example usage:
-model = nn.Linear(2, 1)  # Example model
-ftss = FederatedTSS(model)
-ftss.split_weights()
-shares = ftss.distribute_shares()
-# Simulate receiving updated shares from clients
-ftss.receive_updated_shares([share + 1 for share in shares])  # Example update
+def combine_shares_to_weights(shares):
+    # Combine shares into the original bytes
+    weight_bytes = Shamir.combine(shares)
+    # Deserialize bytes back to model weights
+    model_weights = deserialize_model_weights(weight_bytes)
+    return model_weights
