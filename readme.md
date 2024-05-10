@@ -1,5 +1,5 @@
 
-# Blockchain-Based Federated Learning with Threshold Secret Sharing (TSS)
+# Blockchain-Based enhanced Federated Learning with Threshold Secret Sharing (TSS)
 
 - Problem trying to solve 
     - True purpose of  a federated ML is to make sure that maintain privacy of the data, and making sure the model got integrity.  This is not exposed to attack vectors.
