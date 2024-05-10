@@ -1,12 +1,22 @@
 
+# Blockchain-Based enhanced Federated Learning with Threshold Secret Sharing (TSS)
 
-## scope of the FL 
+- Problem trying to solve 
+    - True purpose of  a federated ML is to make sure that maintain privacy of the data, and making sure the model got integrity.  This is not exposed to attack vectors.
+    - The current federated ML systems are distributed and the overhead cost of implementation, maintaining those are expensive , consume tons  of infra , require specific skill sets to integrate with current technology in place. 
+    - Often hard to scale.
+    - Often doesn’t work as expected. 
+- Solution
+    - By trying to introduce the new layer of validation using blockchain and reduce the complexity around implementation and integration. Be able to extend that concept to wider compute resources and be able to fast track ML model training, and bridge the gap between current computer bottle necks, in a much secure way. 
+
+    
+## Scope of the FL 
 
 Client-side: Clients pull the model from the server, train locally, and send updates back.
 Server-side: The server aggregates these updates to improve the global model.
 
 
-## block chain
+## Blockchain
 
 Use a blockchain to record hashes of model updates and metadata about the training rounds.
 Every transaction (model update sent to and from the server) can be recorded as a blockchain transaction.
