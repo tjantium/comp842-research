@@ -81,7 +81,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # Define allowed extensions
 ALLOWED_EXTENSIONS = {'pth', 'npy', 'pt', 'h5'}
 LOG_DIR = 'logs/'
-from_address = "0x..."  # Specify the sender address here
 
 def retrieve_data_from_logs():
     try:
