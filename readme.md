@@ -124,6 +124,48 @@ Describe how to set up and run the project here.
   ipfs daemon
   ```
 
+## Running Server/ Client
+
+running server 
+
+```bash
+python server.py
+```
+
+running client
+
+```bash
+python client.py
+```
+
+
+Successfully running the server and client will allow you to interact with the blockchain and perform various operations.
+
+
+e.g.
+
+```bash 
+(comp842p) ➜  comp842-research git:(contract) ✗ python client.py
+Epoch 1, Loss: 0.3872787058353424
+Epoch 2, Loss: 0.36850738525390625
+Epoch 3, Loss: 0.3506479263305664
+Epoch 4, Loss: 0.33365580439567566
+Epoch 5, Loss: 0.3174889385700226
+Epoch 6, Loss: 0.3021070063114166
+Epoch 7, Loss: 0.2874719202518463
+Epoch 8, Loss: 0.2735472023487091
+Epoch 9, Loss: 0.26029837131500244
+Epoch 10, Loss: 0.24769258499145508
+Model saved locally at local_model.pth
+Model file uploaded successfully.
+Server response: {
+  "ipfs_hash": "QmTK27Vv8ZNqmm6BR4NSNaKbYDcmFRBvE8M9FRoRr6MVfm",
+  "message": "File uploaded and logged successfully.",
+  "status": "success",
+  "tx_hash": "0x3538b5319d60692095cd90cdf1d977a74a5c77485692891bee39c89a69292acd"
+}
+```
+
 
 ## TroubleShooting
 
