@@ -32,7 +32,7 @@ web3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))  # Your Ganache URL
 web3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
 # Correctly using the checksum address for all operations
-contract_address = "0x7e1fcf190c223398b851047be094d8e4da564731"
+contract_address = "0x74b20594e1fB6c56AedaF7aeb3256fF19Cf2440e"
 checksum_address = web3.to_checksum_address(contract_address)
 contract_abi_path = "block_chain/build/contracts/SimpleStorage.json"
 
@@ -42,7 +42,7 @@ with open(contract_abi_path, 'r') as f:
     contract_abi = contract_data['abi']
 
 # Initialize the account with the private key
-ganache_private_key = "0xab0f62f94a335b1bbee0e8ec3364f474fe2fb99d61b59b8748f873735b6328ae"
+ganache_private_key = "0xa2effd70bbe64d0dd514ce80e884fdfcbcb1c5b1b02bbb00f4398f5c71709d90"
 account = Account.from_key(ganache_private_key)
 account_address = account.address
 # Access the contract using the checksummed address
